@@ -1,0 +1,124 @@
+{
+  "Patients": {
+    "/patients": {
+      "get": {
+        "description": "List all patients with their assigned doctors and room/bed information",
+        "responses": {
+          "200": {
+            "description": "List of patients",
+            "content": []  // Array of patient objects
+          }
+        }
+      },
+      "post": {
+        "description": "Add a new patient to the system",
+        "requestBody": {
+          "name": "John Doe",
+          "age": 30,
+          "gender": "Male",
+          "doctorId": "789",
+          "roomNumber": "101",
+          "bedNumber": "1A"
+        },
+        "responses": {
+          "201": {
+            "description": "Patient added"
+          }
+        }
+      }
+    },
+    "/patients/{patientId}": {
+      "get": {
+        "description": "Retrieve a specific patient's details along with their doctor, room, and bed number",
+        "responses": {
+          "200": {
+            "description": "Patient details",
+            "content": {}  // Patient object
+          }
+        }
+      }
+    }
+  },
+  "Doctors": {
+    "/doctors": {
+      "get": {
+        "description": "List all doctors",
+        "responses": {
+          "200": {
+            "description": "List of doctors",
+            "content": []  // Array of doctor objects
+          }
+        }
+      },
+      "post": {
+        "description": "Add a new doctor to the system",
+        "requestBody": {
+          "name": "Dr. Smith",
+          "specialization": "Cardiology"
+        },
+        "responses": {
+          "201": {
+            "description": "Doctor added"
+          }
+        }
+      }
+    }
+  },
+  "DataReading": {
+    "/readings": {
+      "get": {
+        "description": "Retrieve a list of recent readings from all devices for a specific patient",
+        "parameters": {
+          "patientId": "12345"
+        },
+        "responses": {
+          "200": {
+            "description": "List of readings",
+            "content": []  // Array of reading objects
+          }
+        }
+      },
+      "post": {
+        "description": "Submit a new reading from a device",
+        "requestBody": {
+          "patientId": "12345",
+          "deviceId": "001",
+          "type": "blood pressure",
+          "value": "120/80",
+          "unit": "mmHg"
+        },
+        "responses": {
+          "201": {
+            "description": "Reading recorded"
+          }
+        }
+      }
+    }
+  },
+  "DeviceInterface": {
+    "/devices": {
+      "get": {
+        "description": "List all registered devices",
+        "responses": {
+          "200": {
+            "description": "List of devices",
+            "content": []  // Array of device objects
+          }
+        }
+      },
+      "post": {
+        "description": "Register a new device to the system",
+        "requestBody": {
+          "name": "Blood Glucose Meter",
+          "manufacturer": "MediTech Co.",
+          "type": "glucose"
+        },
+        "responses": {
+          "201": {
+            "description": "Device registered"
+          }
+        }
+      }
+    }
+  }
+}
