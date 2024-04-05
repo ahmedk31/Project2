@@ -1,4 +1,4 @@
-
+from user import add_doctor, add_patient
 
 
 def test_add_doctor_and_patient():
