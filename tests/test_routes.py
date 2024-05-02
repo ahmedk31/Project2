@@ -1,9 +1,19 @@
 from app import create_app
 
 class TestFlaskApi:
+   
     def setup_method(self, method):
         self.app = create_app()
         self.client = self.app.test_client()
+
+
+
+    def test_home_page():
+        app = create_app('config.TestingConfig')
+        client = app.test_client()
+        response = client.get('/')
+        assert response.status_code == 200
+
 
     def test_create_doctor(self):
         response = self.client.post('/doctors', json={
