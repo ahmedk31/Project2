@@ -13,23 +13,38 @@ def app():
     })
     with app.app_context():
         db.create_all()  # Create tables for all registered models
-
     yield app
-
     with app.app_context():
         db.session.remove()
         db.drop_all()
-
 
 @pytest.fixture
 def client(app):
     with app.test_client() as client:
         yield client
 
+def test_add_doctor(client):
+    """Test adding a doctor."""
+    doctor_data = {
+        'name': 'Dr. Watson',
+        'specialization': 'General'
+    }
+    response = client.post('/doctors', json=doctor_data)
+    assert response.status_code == 201, "Should return a 201 status for a successful creation."
+    json_data = response.get_json()
+    assert json_data['name'] == 'Dr. Watson', "The doctor's name should be returned in the response."
+
+def test_get_doctors(client):
+    """Test retrieving all doctors."""
+    response = client.get('/doctors')
+    assert response.status_code == 200, "Should return a 200 status for a successful fetch."
+    doctors = response.get_json()
+    assert isinstance(doctors, list), "The response should be a list of doctors."
+
 def test_add_patient(client):
     """Test adding a patient."""
     # First, add a doctor since it's a foreign key for a patient
-    doctor = Doctor(name="Dr. Watson", specialization="Surgeon")
+    doctor = Doctor(name="Dr. Watson", specialization="General")
     db.session.add(doctor)
     db.session.commit()
 
