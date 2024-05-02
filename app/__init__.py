@@ -1,21 +1,21 @@
 from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
-from .config import Config
+import os
 
-def create_app():
+db = SQLAlchemy()
+
+def create_app(config_class='Config'):
     load_dotenv()
     app = Flask(__name__)
-    app.config.from_object(Config)
-    
-    if not app.config['SECRET_KEY']:
-        raise ValueError("No SECRET_KEY set for Flask application")
-    if not app.config['MONGO_URI']:
-        raise ValueError("No MONGO_URI set for MongoDB connection")
+    app.config.from_object(f'instance.config.{config_class}')
 
-    from .database import init_db
-    init_db(app)
-    
-    from .routes import init_routes
-    init_routes(app)
-    
+    db.init_app(app)
+
+    with app.app_context():
+        db.create_all()
+
+    from .routes import main as main_blueprint
+    app.register_blueprint(main_blueprint)
+
     return app
