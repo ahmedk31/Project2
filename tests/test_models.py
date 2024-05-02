@@ -4,7 +4,7 @@ from app.models import Doctor, Patient
 
 @pytest.fixture
 def app():
-    app = create_app('Config')
+    app = create_app()
     app.config.update({
         'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:'
     })
@@ -12,23 +12,19 @@ def app():
         db.create_all()
     yield app
 
-@pytest.fixture
-def client(app):
-    return app.test_client()
-
-def test_new_doctor(app):
+def test_doctor_creation(app):
     with app.app_context():
-        doctor = Doctor(name="Dr. Watson", specialization="General")
+        doctor = Doctor(name="Dr. Holmes", specialization="Surgery")
         db.session.add(doctor)
         db.session.commit()
         assert Doctor.query.count() == 1
 
-def test_new_patient(app):
+def test_patient_creation(app):
     with app.app_context():
-        doctor = Doctor(name="Dr. Watson", specialization="General")
+        doctor = Doctor(name="Dr. Holmes", specialization="Surgery")
         db.session.add(doctor)
         db.session.commit()
-        patient = Patient(name="John Doe", age=30, gender="Male", doctor_id=doctor.id, room_number="100", bed_number="1")
+        patient = Patient(name="Patient X", age=30, gender="Male", doctor_id=doctor.id, room_number="101", bed_number="1")
         db.session.add(patient)
         db.session.commit()
         assert Patient.query.count() == 1

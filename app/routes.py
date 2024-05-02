@@ -4,24 +4,37 @@ from . import db
 
 main = Blueprint('main', __name__)
 
-@main.route('/add_doctor', methods=['POST'])
+@main.route('/doctors', methods=['POST'])
 def add_doctor():
-    name = request.json['name']
-    specialization = request.json['specialization']
-    doctor = Doctor(name=name, specialization=specialization)
+    data = request.json
+    doctor = Doctor(name=data['name'], specialization=data['specialization'])
     db.session.add(doctor)
     db.session.commit()
-    return jsonify({'id': doctor.id, 'name': doctor.name, 'specialization': doctor.specialization})
+    return jsonify({'id': doctor.id, 'name': doctor.name, 'specialization': doctor.specialization}), 201
 
-@main.route('/add_patient', methods=['POST'])
+@main.route('/doctors', methods=['GET'])
+def get_doctors():
+    doctors = Doctor.query.all()
+    results = [{'id': doc.id, 'name': doc.name, 'specialization': doc.specialization} for doc in doctors]
+    return jsonify(results), 200
+
+@main.route('/patients', methods=['POST'])
 def add_patient():
-    name = request.json['name']
-    age = request.json['age']
-    gender = request.json['gender']
-    doctor_id = request.json['doctor_id']
-    room_number = request.json['room_number']
-    bed_number = request.json['bed_number']
-    patient = Patient(name=name, age=age, gender=gender, doctor_id=doctor_id, room_number=room_number, bed_number=bed_number)
+    data = request.json
+    patient = Patient(
+        name=data['name'],
+        age=data['age'],
+        gender=data['gender'],
+        doctor_id=data['doctor_id'],
+        room_number=data['room_number'],
+        bed_number=data['bed_number']
+    )
     db.session.add(patient)
     db.session.commit()
-    return jsonify({'id': patient.id, 'name': patient.name})
+    return jsonify({'id': patient.id, 'name': patient.name}), 201
+
+@main.route('/patients', methods=['GET'])
+def get_patients():
+    patients = Patient.query.all()
+    results = [{'id': pat.id, 'name': pat.name, 'age': pat.age, 'gender': pat.gender, 'doctor_id': pat.doctor_id} for pat in patients]
+    return jsonify(results), 200
