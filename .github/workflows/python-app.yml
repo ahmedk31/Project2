@@ -38,5 +38,5 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
      env:
-        SQLALCHEMY_DATABASE_URI: 'sqlite:///memory.db'
+        SQLALCHEMY_DATABASE_URI: 'sqlite:///:memory:'
       run: pytest tests/
