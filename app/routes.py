@@ -1,19 +1,20 @@
-from flask import Blueprint, request, jsonify
-from . import mongo
-from .models import Doctor, Patient
+from flask import jsonify, request
+from .database import add_doctor, get_all_doctors, add_patient
 
-main = Blueprint('main', __name__)
+def init_routes(app):
+    @app.route('/doctors', methods=['POST'])
+    def create_doctor():
+        doctor_data = request.get_json()
+        doctor_id = add_doctor(doctor_data)
+        return jsonify({"id": doctor_id}), 201
 
-@main.route('/add_doctor', methods=['POST'])
-def add_doctor():
-    doctor_data = request.json
-    doctor = Doctor(**doctor_data)
-    result = mongo.db.doctors.insert_one(doctor.model_dump(exclude={'password'}))
-    return jsonify({'id': str(result.inserted_id), 'message': 'Doctor added successfully'}), 201
+    @app.route('/doctors', methods=['GET'])
+    def list_doctors():
+        doctors = get_all_doctors()
+        return jsonify(doctors), 200
 
-@main.route('/add_patient', methods=['POST'])
-def add_patient():
-    patient_data = request.json
-    patient = Patient(**patient_data)
-    result = mongo.db.patients.insert_one(patient.model_dump(exclude={'password'}))
-    return jsonify({'id': str(result.inserted_id), 'message': 'Patient added successfully'}), 201
+    @app.route('/patients', methods=['POST'])
+    def create_patient():
+        patient_data = request.get_json()
+        patient_id = add_patient(patient_data)
+        return jsonify({"id": patient_id}), 201

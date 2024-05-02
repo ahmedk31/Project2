@@ -1,15 +1,21 @@
 from flask import Flask
-from flask_pymongo import PyMongo
-from config import Config
+from dotenv import load_dotenv
+from .config import Config
 
-mongo = PyMongo()
-
-def create_app(config_class=Config):
+def create_app():
+    load_dotenv()
     app = Flask(__name__)
-    app.config.from_object(config_class)
-    mongo.init_app(app)
+    app.config.from_object(Config)
+    
+    if not app.config['SECRET_KEY']:
+        raise ValueError("No SECRET_KEY set for Flask application")
+    if not app.config['MONGO_URI']:
+        raise ValueError("No MONGO_URI set for MongoDB connection")
 
-    from .routes import main as main_blueprint
-    app.register_blueprint(main_blueprint)
-
+    from .database import init_db
+    init_db(app)
+    
+    from .routes import init_routes
+    init_routes(app)
+    
     return app
