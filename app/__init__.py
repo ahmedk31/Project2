@@ -1,15 +1,15 @@
 from flask import Flask
 from flask_pymongo import PyMongo
-from config import DevelopmentConfig
-from dotenv import load_dotenv
-import os
+from config import Config
 
-load_dotenv()  # Load environment variables
+mongo = PyMongo()
 
-app = Flask(__name__)
-app.config.from_object(DevelopmentConfig)
+def create_app(config_class=Config):
+    app = Flask(__name__)
+    app.config.from_object(config_class)
+    mongo.init_app(app)
 
-mongo = PyMongo(app)
+    from .routes import main as main_blueprint
+    app.register_blueprint(main_blueprint)
 
-from app.routes import main as main_blueprint
-app.register_blueprint(main_blueprint)
+    return app
