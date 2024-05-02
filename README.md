@@ -14,7 +14,6 @@ This application is a medical record management system designed to securely mana
 - [Database Schema](#database-schema)
 - [Testing](#testing)
 - [Contributors](#contributors)
-- [License](#license)
 
 ## Installation
 Follow these steps to set up the application:
@@ -146,5 +145,3 @@ Testing ensures application reliability:
 ## Contributors
 
 Kawar Ahmed
-
-
