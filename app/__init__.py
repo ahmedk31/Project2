@@ -1,12 +1,13 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from .config import Config
+from .config import Config, TestingConfig  
 
 db = SQLAlchemy()
 
-def create_app():
+def create_app(config_class='app.config.Config'):
     app = Flask(__name__)
-    app.config.from_object(Config)
+    # Dynamically load the configuration specified by `config_class`
+    app.config.from_object(config_class)
     db.init_app(app)
 
     with app.app_context():
