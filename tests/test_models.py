@@ -1,5 +1,6 @@
 import pytest
-from app import create_app, db
+from app import create_app
+from app.database import db
 from app.models import Doctor, Patient
 
 @pytest.fixture

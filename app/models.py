@@ -1,4 +1,4 @@
-from . import db
+from .database import db
 
 class Doctor(db.Model):
     id = db.Column(db.Integer, primary_key=True)
