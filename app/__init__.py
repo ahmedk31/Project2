@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from .config import Config, TestingConfig  
+from .config import Config, TestingConfig  # Make sure to import TestingConfig
 
 db = SQLAlchemy()
 

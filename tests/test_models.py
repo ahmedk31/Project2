@@ -4,13 +4,25 @@ from app.models import Doctor, Patient
 
 @pytest.fixture
 def app():
+    """Create and configure a new app instance for each test."""
+    # Create a Flask application configured for testing
     app = create_app()
     app.config.update({
-        'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:'
+        'TESTING': True,
+        'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:',  # In-memory database
+        'SQLALCHEMY_TRACK_MODIFICATIONS': False
     })
+
+    # Initialize the database
     with app.app_context():
         db.create_all()
+
     yield app
+
+    # Teardown after tests are done
+    with app.app_context():
+        db.session.remove()
+        db.drop_all()
 
 def test_doctor_creation(app):
     with app.app_context():
