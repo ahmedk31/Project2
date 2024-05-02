@@ -1,7 +1,7 @@
-# app/__init__.py
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from .config import Config  
+from .config import Config
+from .routes import main  
 
 db = SQLAlchemy()
 
@@ -16,7 +16,9 @@ def create_app(test_config=None):
         # load the test config if passed in
         app.config.from_mapping(test_config)
 
-    with app.app_context():
-        db.init_app(app)
+    db.init_app(app)
+
+    # Register Blueprint
+    app.register_blueprint(main)
 
     return app

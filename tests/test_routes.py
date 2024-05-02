@@ -26,13 +26,13 @@ def client(app):
 def test_add_doctor(client):
     """Test adding a doctor."""
     doctor_data = {
-        'name': 'Dr. Watson',
-        'specialization': 'General'
+        'name': 'Dr. Holmes',
+        'specialization': 'Surgery'
     }
     response = client.post('/doctors', json=doctor_data)
     assert response.status_code == 201, "Should return a 201 status for a successful creation."
     json_data = response.get_json()
-    assert json_data['name'] == 'Dr. Watson', "The doctor's name should be returned in the response."
+    assert json_data['name'] == 'Dr. Holmes', "The doctor's name should be returned in the response."
 
 def test_get_doctors(client):
     """Test retrieving all doctors."""
@@ -44,7 +44,7 @@ def test_get_doctors(client):
 def test_add_patient(client):
     """Test adding a patient."""
     # First, add a doctor since it's a foreign key for a patient
-    doctor = Doctor(name="Dr. Watson", specialization="General")
+    doctor = Doctor(name="Dr. Holmes", specialization="Surgery")
     db.session.add(doctor)
     db.session.commit()
 

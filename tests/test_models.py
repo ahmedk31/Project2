@@ -33,7 +33,7 @@ def test_patient_creation(app):
         doctor = Doctor(name="Dr. Holmes", specialization="Surgery")
         db.session.add(doctor)
         db.session.commit()
-        patient = Patient(name="Patient X", age=30, gender="Male", doctor_id=doctor.id, room_number="101", bed_number="1")
+        patient = Patient(name="John Doe", age=30, gender="Male", doctor_id=doctor.id, room_number="101", bed_number="1")
         db.session.add(patient)
         db.session.commit()
         assert Patient.query.count() == 1

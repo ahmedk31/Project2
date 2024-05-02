@@ -5,12 +5,16 @@ from . import db
 main = Blueprint('main', __name__)
 
 @main.route('/doctors', methods=['POST'])
+@main.route('/doctors', methods=['POST'])
 def add_doctor():
     data = request.json
+    if 'name' not in data or 'specialization' not in data:
+        return jsonify({'error': 'Missing name or specialization'}), 400
     doctor = Doctor(name=data['name'], specialization=data['specialization'])
     db.session.add(doctor)
     db.session.commit()
     return jsonify({'id': doctor.id, 'name': doctor.name, 'specialization': doctor.specialization}), 201
+
 
 @main.route('/doctors', methods=['GET'])
 def get_doctors():
