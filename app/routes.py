@@ -1,34 +1,27 @@
 from flask import Blueprint, request, jsonify
+from .models import Doctor, Patient
 from . import db
-from .models import Doctor, Patient, User, UserCreate
 
 main = Blueprint('main', __name__)
 
-@main.route('/register', methods=['POST'])
-def register():
-    user_data = request.get_json()
-    user = UserCreate(**user_data)  # Validate incoming data
-    new_user = User(email=user.email, username=user.username)
-    new_user.set_password(user.password)  # Hash the password
-    db.session.add(new_user)
-    db.session.commit()
-    return jsonify({"username": new_user.username, "email": new_user.email}), 201
-
-@main.route('/doctors', methods=['POST'])
+@main.route('/add_doctor', methods=['POST'])
 def add_doctor():
-    data = request.get_json()
-    doctor = Doctor(name=data['name'], specialization=data['specialization'])
+    name = request.json['name']
+    specialization = request.json['specialization']
+    doctor = Doctor(name=name, specialization=specialization)
     db.session.add(doctor)
     db.session.commit()
-    return jsonify({'id': doctor.id, 'name': doctor.name, 'specialization': doctor.specialization}), 201
+    return jsonify({'id': doctor.id, 'name': doctor.name, 'specialization': doctor.specialization})
 
-@main.route('/patients', methods=['POST'])
+@main.route('/add_patient', methods=['POST'])
 def add_patient():
-    data = request.get_json()
-    patient = Patient(
-        name=data['name'], age=data['age'], gender=data['gender'],
-        doctor_id=data['doctor_id'], room_number=data['room_number'], bed_number=data['bed_number']
-    )
+    name = request.json['name']
+    age = request.json['age']
+    gender = request.json['gender']
+    doctor_id = request.json['doctor_id']
+    room_number = request.json['room_number']
+    bed_number = request.json['bed_number']
+    patient = Patient(name=name, age=age, gender=gender, doctor_id=doctor_id, room_number=room_number, bed_number=bed_number)
     db.session.add(patient)
     db.session.commit()
-    return jsonify({'id': patient.id, 'name': patient.name}), 201
+    return jsonify({'id': patient.id, 'name': patient.name})

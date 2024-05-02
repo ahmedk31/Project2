@@ -1,19 +1,22 @@
+import pytest
 from app import create_app, db
+from app.models import Doctor
 
-def test_register():
-    app = create_app('TestConfig')
-    client = app.test_client()
-    response = client.post('/register', json={
-        'email': 'user@example.com',
-        'username': 'user1',
-        'password': 'securepassword123'
+@pytest.fixture
+def app():
+    app = create_app('Config')
+    app.config.update({
+        'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:'
     })
-    assert response.status_code == 201
-    assert b"user1" in response.data
+    with app.app_context():
+        db.create_all()
+    yield app
 
-def test_doctors_list():
-    app = create_app('TestConfig')
-    client = app.test_client()
-    response = client.get('/doctors')
+@pytest.fixture
+def client(app):
+    return app.test_client()
+
+def test_add_doctor(client):
+    response = client.post('/add_doctor', json={'name': 'Dr. House', 'specialization': 'Diagnostic Medicine'})
     assert response.status_code == 200
-    assert b"[]" in response.data  # Expecting an empty list initially
+    assert response.json['name'] == 'Dr. House'
