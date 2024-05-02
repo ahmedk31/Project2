@@ -42,26 +42,27 @@ def test_get_doctors(client):
     doctors = response.get_json()
     assert isinstance(doctors, list), "The response should be a list of doctors."
 
-def test_add_patient(client):
+def test_add_patient(client, app):
     """Test adding a patient."""
-    # First, add a doctor since it's a foreign key for a patient
-    doctor = Doctor(name="Dr. Holmes", specialization="Surgery")
-    db.session.add(doctor)
-    db.session.commit()
+    with app.app_context():  # This ensures that the test is run within the application context
+        # First, add a doctor since it's a foreign key for a patient
+        doctor = Doctor(name="Dr. Holmes", specialization="Surgery")
+        db.session.add(doctor)
+        db.session.commit()
 
-    # Now, test adding a patient
-    patient_data = {
-        'name': 'John Doe',
-        'age': 30,
-        'gender': 'Male',
-        'doctor_id': doctor.id,
-        'room_number': '100',
-        'bed_number': '1'
-    }
-    response = client.post('/patients', json=patient_data)
-    assert response.status_code == 201, "Should return a 201 status for a successful creation."
-    json_data = response.get_json()
-    assert json_data['name'] == 'John Doe', "The patient's name should be returned in the response."
+        # Now, test adding a patient
+        patient_data = {
+            'name': 'John Doe',
+            'age': 30,
+            'gender': 'Male',
+            'doctor_id': doctor.id,
+            'room_number': '100',
+            'bed_number': '1'
+        }
+        response = client.post('/patients', json=patient_data)
+        assert response.status_code == 201, "Should return a 201 status for a successful creation."
+        json_data = response.get_json()
+        assert json_data['name'] == 'John Doe', "The patient's name should be returned in the response."
 
 def test_get_patients(client):
     """Test retrieving all patients."""
