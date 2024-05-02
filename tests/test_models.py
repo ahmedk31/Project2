@@ -16,13 +16,10 @@ def app():
     # Initialize the database
     with app.app_context():
         db.create_all()
-
-    yield app
-
-    # Teardown after tests are done
-    with app.app_context():
+        yield app
         db.session.remove()
         db.drop_all()
+    
 
 def test_doctor_creation(app):
     with app.app_context():

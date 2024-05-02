@@ -1,19 +1,21 @@
+# app/__init__.py
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from .config import Config, TestingConfig  # Make sure to import TestingConfig
+from .config import Config  
 
 db = SQLAlchemy()
 
-def create_app(config_class='app.config.Config'):
-    app = Flask(__name__)
-    # Dynamically load the configuration specified by `config_class`
-    app.config.from_object(config_class)
+def create_app(test_config=None):
+    """Create and return a new Flask application."""
+    app = Flask(__name__, instance_relative_config=True)
+
+    if test_config is None:
+        # load the instance config, if it exists, when not testing
+        app.config.from_object(Config)
+    else:
+        # load the test config if passed in
+        app.config.from_mapping(test_config)
+
     db.init_app(app)
-
-    with app.app_context():
-        db.create_all()
-
-    from .routes import main as main_blueprint
-    app.register_blueprint(main_blueprint)
 
     return app
