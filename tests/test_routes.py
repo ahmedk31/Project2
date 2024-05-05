@@ -1,4 +1,4 @@
-import pytest, bcrypt
+import pytest
 from app import create_app
 from app.database import db
 from app.models import Doctor, Patient, User
@@ -28,7 +28,8 @@ def test_register_user(client):
     user_data = {
         'username': 'newuser',
         'email': 'newuser@example.com',
-        'password': 'newpassword'
+        'password': 'newpassword',
+        'role': 'doctor'
     }
     response = client.post('/users/register', json=user_data)
     assert response.status_code == 201
@@ -39,7 +40,7 @@ def test_register_user(client):
 def test_register_user_with_incomplete_data(client):
     incomplete_data = {
         'username': 'incompleteuser'
-        # Missing email and password
+        # Missing email and password and role
     }
     response = client.post('/users/register', json=incomplete_data)
     assert response.status_code == 400
