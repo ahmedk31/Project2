@@ -31,7 +31,7 @@ def test_register_user(client):
         'password': 'newpassword',
         'role': 'doctor'
     }
-    response = client.post('/test/register', json=user_data)
+    response = client.post('/register', json=user_data)
     assert response.status_code == 201
     json_data = response.get_json()
     assert json_data['role'] == 'doctor'  # Confirm role is returned as expected
@@ -51,7 +51,7 @@ def test_add_doctor(client):
         'name': 'Dr. Holmes',
         'specialization': 'Surgery'
     }
-    response = client.post('/test/doctors', json=doctor_data)
+    response = client.post('/doctors', json=doctor_data)
     assert response.status_code == 201, "Should return a 201 status for a successful creation."
     json_data = response.get_json()
     assert json_data['name'] == 'Dr. Holmes', "The doctor's name should be returned in the response."
@@ -80,7 +80,7 @@ def test_add_patient(client, app):
             'room_number': '100',
             'bed_number': '1'
         }
-        response = client.post('/test/patients', json=patient_data)
+        response = client.post('/patients', json=patient_data)
         assert response.status_code == 201, "Should return a 201 status for a successful creation."
         json_data = response.get_json()
         assert json_data['name'] == 'John Doe', "The patient's name should be returned in the response."
@@ -96,12 +96,12 @@ def test_get_patients(client):
 def test_add_check_history(client):
     # Assume a patient already exists with id=1 for this test to be meaningful
     check_data = {'patient_id': 1}
-    response = client.post('/test/check_history', json=check_data)
+    response = client.post('/check_history', json=check_data)
     assert response.status_code == 201
     assert 'id' in response.get_json()
 
 def test_add_doctor_error_handling(client):
     doctor_data = {'name': 'Dr. NoSpecialty'}  # Missing specialization
-    response = client.post('/test/doctors', json=doctor_data)
+    response = client.post('/doctors', json=doctor_data)
     assert response.status_code == 400
     assert 'error' in response.get_json()
