@@ -7,7 +7,22 @@ from .models import Doctor, Patient, CheckHistory, User
 
 main = Blueprint('main', __name__)
 
-@main.route('/doctors', methods=['POST'])
+@main.route('/register', methods=['POST'])
+def register():
+    data = request.json
+
+    if 'username' not in data or 'email' not in data or 'password' not in data or 'role' not in data:
+        return jsonify({'error': 'Missing required fields'}), 400
+    
+    if data['role'] not in ['doctor', 'patient']:
+        return jsonify({'error': 'Invalid role specified'}), 400
+
+    user = User(username=data['username'], email=data['email'], role=data['role'])
+    user.set_password(data['password'])
+    db.session.add(user)
+    db.session.commit()
+    return jsonify({'id': user.id, 'username': user.username, 'email': user.email, 'role': user.role}), 201
+
 @main.route('/doctors', methods=['POST'])
 def add_doctor():
     data = request.json
@@ -59,13 +74,3 @@ def add_check_history():
     return jsonify({'id': check_history.id}), 201
 
 
-@main.route('/users/register', methods=['POST'])
-def register_user():
-    data = request.json
-    if 'username' not in data or 'email' not in data or 'password' not in data:
-        return jsonify({'error': 'Missing required fields'}), 400
-    user = User(username=data['username'], email=data['email'])
-    user.set_password(data['password'])
-    db.session.add(user)
-    db.session.commit()
-    return jsonify({'id': user.id, 'username': user.username, 'email': user.email}), 201
