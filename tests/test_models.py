@@ -44,11 +44,16 @@ def test_patient_creation(app):
 def test_relationships(app):
     with app.app_context():
         doctor = Doctor(name="Dr. Wise", specialization="General")
-        patient = Patient(name="John Doe", age=30, gender="Male", doctor_id=doctor.id)
         db.session.add(doctor)
+        db.session.commit()  # Commit doctor to generate an ID
+
+        # Now doctor.id is available and not None
+        patient = Patient(name="John Doe", age=30, gender="Male", doctor_id=doctor.id)
         db.session.add(patient)
         db.session.commit()
-        assert patient in doctor.patients
+
+        assert patient.doctor == doctor  # Check if the relationship is correctly established
+
 
 def test_default_check_time(app):
     with app.app_context():
