@@ -1,7 +1,8 @@
 import pytest
 from app import create_app
 from app.database import db
-from app.models import Doctor, Patient
+from app.models import Doctor, Patient, CheckHistory
+
 
 @pytest.fixture
 def app():
@@ -38,3 +39,23 @@ def test_patient_creation(app):
         db.session.add(patient)
         db.session.commit()
         assert Patient.query.count() == 1
+
+
+def test_relationships(app):
+    with app.app_context():
+        doctor = Doctor(name="Dr. Wise", specialization="General")
+        patient = Patient(name="John Doe", age=30, gender="Male", doctor_id=doctor.id)
+        db.session.add(doctor)
+        db.session.add(patient)
+        db.session.commit()
+        assert patient in doctor.patients
+
+def test_default_check_time(app):
+    with app.app_context():
+        patient = Patient(name="John Doe", age=30, gender="Male", doctor_id=1)
+        db.session.add(patient)
+        db.session.commit()
+        check_history = CheckHistory(patient_id=patient.id)
+        db.session.add(check_history)
+        db.session.commit()
+        assert check_history.check_time is not None

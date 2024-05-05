@@ -1,4 +1,5 @@
 from .database import db
+from datetime import datetime, timezone
 
 class Doctor(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -14,3 +15,10 @@ class Patient(db.Model):
     doctor_id = db.Column(db.Integer, db.ForeignKey('doctor.id'), nullable=False)
     room_number = db.Column(db.String(100))
     bed_number = db.Column(db.String(100))
+    diagnosis = db.Column(db.String(255))
+    prescribed_medicine = db.Column(db.String(255))
+
+class CheckHistory(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    patient_id = db.Column(db.Integer, db.ForeignKey('patient.id'), nullable=False)
+    check_time = db.Column(db.DateTime, nullable=False, default=datetime.now(timezone.utc))

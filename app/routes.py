@@ -1,6 +1,8 @@
 from flask import Blueprint, request, jsonify
-from .models import Doctor, Patient
+from .models import Doctor, Patient, CheckHistory
 from . import db
+from datetime import datetime, timezone
+
 
 main = Blueprint('main', __name__)
 
@@ -42,3 +44,15 @@ def get_patients():
     patients = Patient.query.all()
     results = [{'id': pat.id, 'name': pat.name, 'age': pat.age, 'gender': pat.gender, 'doctor_id': pat.doctor_id} for pat in patients]
     return jsonify(results), 200
+
+
+@main.route('/check_history', methods=['POST'])
+def add_check_history():
+    data = request.json
+    check_history = CheckHistory(
+        patient_id=data['patient_id'],
+        check_time=data.get('check_time', datetime.now(timezone.utc))
+    )
+    db.session.add(check_history)
+    db.session.commit()
+    return jsonify({'id': check_history.id}), 201

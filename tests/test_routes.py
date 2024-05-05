@@ -70,3 +70,17 @@ def test_get_patients(client):
     assert response.status_code == 200, "Should return a 200 status for a successful fetch."
     patients = response.get_json()
     assert isinstance(patients, list), "The response should be a list of patients."
+
+
+def test_add_check_history(client):
+    # Assume a patient already exists with id=1 for this test to be meaningful
+    check_data = {'patient_id': 1}
+    response = client.post('/check_history', json=check_data)
+    assert response.status_code == 201
+    assert 'id' in response.get_json()
+
+def test_add_doctor_error_handling(client):
+    doctor_data = {'name': 'Dr. NoSpecialty'}  # Missing specialization
+    response = client.post('/doctors', json=doctor_data)
+    assert response.status_code == 400
+    assert 'error' in response.get_json()
