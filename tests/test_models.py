@@ -33,7 +33,9 @@ def test_user_creation_and_password_hashing(app):
 
         saved_user = User.query.filter_by(username="testuser").first()
         assert saved_user is not None
-        assert bcrypt.checkpw("securepassword".encode('utf-8'), saved_user.password_hash.encode('utf-8'))
+
+        assert bcrypt.checkpw("securepassword".encode('utf-8'), saved_user.password_hash)
+
 
 def test_password_check(app):
     with app.app_context():
