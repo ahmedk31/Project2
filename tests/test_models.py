@@ -1,7 +1,7 @@
-import pytest
+import pytest,bcrypt
 from app import create_app
 from app.database import db
-from app.models import Doctor, Patient, CheckHistory
+from app.models import Doctor, Patient, CheckHistory,User
 
 
 @pytest.fixture
@@ -22,6 +22,30 @@ def app():
         db.session.remove()
         db.drop_all()
     
+
+
+def test_user_creation_and_password_hashing(app):
+    with app.app_context():
+        user = User(username="testuser", email="test@example.com")
+        user.set_password("securepassword")
+        db.session.add(user)
+        db.session.commit()
+
+        saved_user = User.query.filter_by(username="testuser").first()
+        assert saved_user is not None
+        assert bcrypt.checkpw("securepassword".encode('utf-8'), saved_user.password_hash.encode('utf-8'))
+
+def test_password_check(app):
+    with app.app_context():
+        user = User(username="testuser2", email="test2@example.com")
+        user.set_password("securepassword123")
+        db.session.add(user)
+        db.session.commit()
+
+        assert user.check_password("securepassword123") == True
+        assert user.check_password("wrongpassword") == False
+
+
 
 def test_doctor_creation(app):
     with app.app_context():

@@ -1,7 +1,7 @@
-import pytest
+import pytest, bcrypt
 from app import create_app
 from app.database import db
-from app.models import Doctor, Patient
+from app.models import Doctor, Patient, User
 
 @pytest.fixture
 def app():
@@ -23,6 +23,38 @@ def app():
 def client(app):
     with app.test_client() as client:
         yield client
+
+def test_register_user(client):
+    user_data = {
+        'username': 'newuser',
+        'email': 'newuser@example.com',
+        'password': 'newpassword'
+    }
+    response = client.post('/users/register', json=user_data)
+    assert response.status_code == 201
+    json_data = response.get_json()
+    assert json_data['username'] == 'newuser'
+    assert json_data['email'] == 'newuser@example.com'
+
+def test_register_user_with_incomplete_data(client):
+    incomplete_data = {
+        'username': 'incompleteuser'
+        # Missing email and password
+    }
+    response = client.post('/users/register', json=incomplete_data)
+    assert response.status_code == 400
+    assert 'error' in response.get_json()
+
+
+def test_register_user_with_incomplete_data(client):
+    incomplete_data = {
+        'username': 'incompleteuser'
+        # Missing email and password
+    }
+    response = client.post('/users/register', json=incomplete_data)
+    assert response.status_code == 400
+    assert 'error' in response.get_json()
+
 
 def test_add_doctor(client):
     """Test adding a doctor."""

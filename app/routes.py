@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from .models import Doctor, Patient, CheckHistory
 from . import db
 from datetime import datetime, timezone
+from .models import Doctor, Patient, CheckHistory, User
 
 
 main = Blueprint('main', __name__)
@@ -56,3 +57,15 @@ def add_check_history():
     db.session.add(check_history)
     db.session.commit()
     return jsonify({'id': check_history.id}), 201
+
+
+@main.route('/users/register', methods=['POST'])
+def register_user():
+    data = request.json
+    if 'username' not in data or 'email' not in data or 'password' not in data:
+        return jsonify({'error': 'Missing required fields'}), 400
+    user = User(username=data['username'], email=data['email'])
+    user.set_password(data['password'])
+    db.session.add(user)
+    db.session.commit()
+    return jsonify({'id': user.id, 'username': user.username, 'email': user.email}), 201
