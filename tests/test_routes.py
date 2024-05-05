@@ -29,18 +29,19 @@ def test_register_user(client):
         'username': 'newuser',
         'email': 'newuser@example.com',
         'password': 'newpassword',
-        'role': 'doctor'
+        'role': 'doctor'  # Ensure role is explicitly set
     }
     response = client.post('/users/register', json=user_data)
     assert response.status_code == 201
     json_data = response.get_json()
     assert json_data['username'] == 'newuser'
     assert json_data['email'] == 'newuser@example.com'
+    assert json_data['role'] == 'doctor'  # Verify role is correctly set and returned
 
 def test_register_user_with_incomplete_data(client):
     incomplete_data = {
-        'username': 'incompleteuser'
-        # Missing email and password and role
+        'username': 'incompleteuser',
+        # Missing role, email, and password to check 
     }
     response = client.post('/users/register', json=incomplete_data)
     assert response.status_code == 400

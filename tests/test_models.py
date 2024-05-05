@@ -26,20 +26,20 @@ def app():
 
 def test_user_creation_and_password_hashing(app):
     with app.app_context():
-        user = User(username="testuser", email="test@example.com")
+        # role is provided
+        user = User(username="testuser", email="test@example.com", role='doctor')
         user.set_password("securepassword")
         db.session.add(user)
         db.session.commit()
 
         saved_user = User.query.filter_by(username="testuser").first()
         assert saved_user is not None
-
         assert bcrypt.checkpw("securepassword".encode('utf-8'), saved_user.password_hash)
 
 
 def test_password_check(app):
     with app.app_context():
-        user = User(username="testuser2", email="test2@example.com")
+        user = User(username="testuser2", email="test2@example.com", role='patient')
         user.set_password("securepassword123")
         db.session.add(user)
         db.session.commit()
@@ -47,7 +47,22 @@ def test_password_check(app):
         assert user.check_password("securepassword123") == True
         assert user.check_password("wrongpassword") == False
 
+def test_user_role_assignment(app):
+    with app.app_context():
+        user_doctor = User(username="docexample", email="doc@example.com", role="doctor")
+        user_doctor.set_password("securepassword123")
+        db.session.add(user_doctor)
+        
+        user_patient = User(username="patientexample", email="patient@example.com", role="patient")
+        user_patient.set_password("securepassword123")
+        db.session.add(user_patient)
+        db.session.commit()
 
+        saved_doctor = User.query.filter_by(username="docexample").first()
+        saved_patient = User.query.filter_by(username="patientexample").first()
+
+        assert saved_doctor.role == "doctor"
+        assert saved_patient.role == "patient"
 
 def test_doctor_creation(app):
     with app.app_context():
