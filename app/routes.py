@@ -7,6 +7,15 @@ from .models import Doctor, Patient, CheckHistory, User
 
 main = Blueprint('main', __name__)
 
+
+@main.route('/')
+def home():
+    return 'Hello, World!'
+
+@main.route('/test')
+def test():
+    return 'Test Route'
+
 @main.route('/register', methods=['POST'])
 def register():
     data = request.json
