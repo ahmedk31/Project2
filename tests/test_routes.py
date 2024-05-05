@@ -41,7 +41,7 @@ def test_register_user_with_incomplete_data(client):
         'username': 'incompleteuser'
         # Missing email, password, and role
     }
-    response = client.post('/test/register', json=incomplete_data)  # Correct the endpoint here
+    response = client.post('/register', json=incomplete_data)  # Correct the endpoint here
     assert response.status_code == 400  # Expecting a 400 error due to missing fields
 
 
