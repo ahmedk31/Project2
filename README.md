@@ -14,6 +14,7 @@ This application is a medical record management system designed to securely mana
 - [Database Schema](#database-schema)
 - [Testing](#testing)
 - [Contributors](#contributors)
+- [License](#license)
 
 ## Installation
 Follow these steps to set up the application:
@@ -39,6 +40,25 @@ Dependencies are listed in the `requirements.txt` file, necessary for running th
 Further documentation provides deeper insights into each module's functionalities.
 
 ## API Documentation
+
+
+### User Management
+
+#### Register User
+- **Endpoint:** `POST /register`
+- **Description:** Registers a new user as either a doctor or a patient.
+- **Payload:**
+  ```json
+  {
+    "username": "user1",
+    "email": "user@example.com",
+    "password": "securepassword",
+    "role": "doctor"
+  }
+- **Response:** Returns the newly created users's ID, name, and specialization.
+- **Status Codes:**
+  - `201 Created` if the user is successfully created.
+  - `400 Bad Request` if required fields are missing or invalid.
 
 ### Doctor Endpoints
 
@@ -70,7 +90,7 @@ Further documentation provides deeper insights into each module's functionalitie
   }]
 
 
-- **Status Coes:**
+- **Status Codes:**
     -`200 OK` on successful retrival
 
 ### Patient Endpoints
@@ -111,27 +131,58 @@ Further documentation provides deeper insights into each module's functionalitie
 - **Status Codes:**
     -`200 OK` on successful retrival.
 
+### Check History
+#### Add Check History
+- **Endpoint:** `POST /Check History`
+- **Description:** Records a new check-up event for a patient.
+- **Payload**:
+  ```json
+  [{
+     "patient_id": 123,
+    "check_time": "2023-09-01T14:00:00Z"
+  }]
+
+- **Response:** Returns the ID of the newly created check history record
+- **Status Codes:**
+    -`201 Created` if the check history is successfully created
+
 ## Database Schema
 
 ### Models
 
-#### Patient
-
-- `id`: Primary key
-- `name`: String
-- `age`: Integer
-- `medical_history`: Text
+#### User
+- **id**: Primary key
+- **role**: String (choices: Doctor or Patient)
+- **username**: String (Unique, Not Null)
+- **email**: String (Unique, Not Null)
+- **password_hash**: String
 
 #### Doctor
+- **id**: Primary key
+- **name**: String (Not Null)
+- **specialization**: String (Not Null)
+- **patients**: Relationship (defines the association with patients)
 
-- `id`: Primary key
-- `name`: String
-- `specialization`: String
+#### Patient
+- **id**: Primary key
+- **name**: String (Not Null)
+- **age**: Integer
+- **gender**: String
+- **doctor_id**: ForeignKey (references Doctor)
+- **room_number**: String
+- **bed_number**: String
+- **diagnosis**: String
+- **prescribed_medicine**: String
 
-## Testing
+#### CheckHistory
+- **id**: Primary key
+- **patient_id**: ForeignKey (references Patient)
+- **check_time**: DateTime (default is current UTC time)
 
+### Testing
 
-Testing ensures application reliability:
+Testing ensures application reliability and verifies that all components of the database interact correctly and maintain integrity under various conditions.
+
 
 - **Models:**
 ```bash
@@ -145,3 +196,5 @@ Testing ensures application reliability:
 ## Contributors
 
 Kawar Ahmed
+
+
