@@ -105,3 +105,11 @@ def test_default_check_time(app):
         db.session.add(check_history)
         db.session.commit()
         assert check_history.check_time is not None
+
+
+def test_queue_update_patient_record(app):
+    with app.app_context():
+        from app.background_tasks import task_queue
+        initial_queue_size = task_queue.qsize()  # Getting the initial size of the queue
+        task_queue.put({'patient_id': 1, 'updates': {'name': 'Updated Name'}})
+        assert task_queue.qsize() == initial_queue_size + 1, "Task should be added to the queue"

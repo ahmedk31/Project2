@@ -3,6 +3,7 @@ from .models import Doctor, Patient, CheckHistory
 from . import db
 from datetime import datetime, timezone
 from .models import Doctor, Patient, CheckHistory, User
+from .background_tasks import task_queue
 
 
 main = Blueprint('main', __name__)
@@ -10,9 +11,9 @@ main = Blueprint('main', __name__)
 
 @main.route('/')
 def home():
-    return 'Hello, World!'
+    return 'Hello, World!'  #This is just to make the root directory
 
-@main.route('/test')
+@main.route('/test') #This is for testing
 def test():
     return 'Test Route'
 
@@ -83,3 +84,8 @@ def add_check_history():
     return jsonify({'id': check_history.id}), 201
 
 
+@main.route('/update_patient/<int:patient_id>', methods=['POST'])
+def update_patient(patient_id):
+    updates = request.json
+    task_queue.put({'patient_id': patient_id, 'updates': updates})
+    return jsonify({"message": "Update in progress"}), 202
