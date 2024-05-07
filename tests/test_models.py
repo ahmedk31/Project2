@@ -2,6 +2,7 @@ import pytest,bcrypt
 from app import create_app
 from app.database import db
 from app.models import Doctor, Patient, CheckHistory,User
+from app.background_tasks import task_queue
 
 
 @pytest.fixture
@@ -109,7 +110,6 @@ def test_default_check_time(app):
 
 def test_queue_update_patient_record(app):
     with app.app_context():
-        from app.background_tasks import task_queue
         initial_queue_size = task_queue.qsize()  # Getting the initial size of the queue
         task_queue.put({'patient_id': 1, 'updates': {'name': 'Updated Name'}})
         assert task_queue.qsize() == initial_queue_size + 1, "Task should be added to the queue"
