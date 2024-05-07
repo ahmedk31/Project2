@@ -18,9 +18,10 @@ def app():
         db.session.remove()
         db.drop_all()
 
-@pytest.fixture(scope="session", autouse=True)
-def setup_and_teardown_worker():
-    start_worker()
+@pytest.fixture(scope="session")
+def worker(app):
+    from app.background_tasks import start_worker, stop_worker
+    start_worker(app)  
     yield
     stop_worker()
 

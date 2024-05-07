@@ -18,19 +18,18 @@ def background_worker(app):
     with app.app_context():
         while True:
             task = task_queue.get()
-            if task is None:
+            if task is None:  # Stop signal
                 break
             update_patient_record(task['patient_id'], task['updates'])
             task_queue.task_done()
 
 
-
 worker_thread = None
 
-def start_worker():
+def start_worker(app):
     global worker_thread
     if worker_thread is None or not worker_thread.is_alive():
-        worker_thread = threading.Thread(target=background_worker, daemon=True)
+        worker_thread = threading.Thread(target=background_worker, args=(app,), daemon=True)
         worker_thread.start()
 
 def stop_worker():
