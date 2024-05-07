@@ -3,6 +3,7 @@ from app import create_app
 from app.background_tasks import task_queue, start_worker, stop_worker, update_patient_record
 from app.models import Patient
 from app.database import db
+from threading import Event
 
 @pytest.fixture(scope='module')
 def app():
