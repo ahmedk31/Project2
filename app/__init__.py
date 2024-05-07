@@ -20,7 +20,7 @@ def create_app(test_config=None):
     app.register_blueprint(main)
 
 
-    start_worker()
+    start_worker(app)
 
     @app.teardown_appcontext
     def cleanup(exception=None):
