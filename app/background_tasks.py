@@ -14,22 +14,28 @@ def update_patient_record(patient_id, updates):
                 setattr(patient, key, value)
             db.session.commit()
 
-def background_worker():
-    while True:
-        task = task_queue.get()
-        if task is None:  # Stop signal
-            break
-        update_patient_record(task['patient_id'], task['updates'])
-        task_queue.task_done()
+def background_worker(app):
+    with app.app_context():
+        while True:
+            task = task_queue.get()
+            if task is None:
+                break
+            update_patient_record(task['patient_id'], task['updates'])
+            task_queue.task_done()
 
-worker_thread = threading.Thread(target=background_worker)
-worker_thread.daemon = True
+
+
+worker_thread = None
 
 def start_worker():
-    if not worker_thread.is_alive():
+    global worker_thread
+    if worker_thread is None or not worker_thread.is_alive():
+        worker_thread = threading.Thread(target=background_worker, daemon=True)
         worker_thread.start()
 
 def stop_worker():
-    if worker_thread.is_alive():
+    global worker_thread
+    if worker_thread and worker_thread.is_alive():
         task_queue.put(None)
         worker_thread.join()
+        worker_thread = None

@@ -18,8 +18,8 @@ def app():
         db.session.remove()
         db.drop_all()
 
-@pytest.fixture(scope='module')
-def worker(app):
+@pytest.fixture(scope="session", autouse=True)
+def setup_and_teardown_worker():
     start_worker()
     yield
     stop_worker()
@@ -39,5 +39,5 @@ def test_process_update_task(app, worker):
         import time; time.sleep(1)  # Not ideal for real tests, consider using mocks
         
         # Verify the update
-        updated_patient_record = Patient.query.get(patient.id)
-        assert updated_patient_record.name == 'Jane Doe', "Patient name should be updated to 'Jane Doe'"
+        update_patient_record = Patient.query.get(patient.id)
+        assert update_patient_record.name == 'Jane Doe', "Patient name should be updated to 'Jane Doe'"
