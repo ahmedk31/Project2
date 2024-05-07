@@ -40,5 +40,5 @@ def test_process_update_task(app, worker):
         # Wait for the event to be set by the background worker
         done_event.wait(timeout=10)  # Timeout to avoid hanging indefinitely
         
-        updated_patient_record = Patient.query.get(patient.id)
-        assert updated_patient_record.name == 'Jane Doe', "Patient name should be updated to 'Jane Doe'"
+        update_patient_record = Patient.query.get(patient.id)
+        assert update_patient_record.name == 'Jane Doe', "Patient name should be updated to 'Jane Doe'"

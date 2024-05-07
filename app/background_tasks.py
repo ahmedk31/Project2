@@ -15,13 +15,6 @@ def update_patient_record(patient_id, updates):
                 setattr(patient, key, value)
             db.session.commit()
 
-
-
-
-
-
-
-
 def background_worker(app):
     with app.app_context():
         while True:
