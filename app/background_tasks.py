@@ -1,5 +1,6 @@
 import queue
 import threading
+from threading import Event
 from flask import current_app
 from .database import db
 from .models import Patient
@@ -14,14 +15,15 @@ def update_patient_record(patient_id, updates):
                 setattr(patient, key, value)
             db.session.commit()
 
-def background_worker(app):
-    with app.app_context():
-        while True:
-            task = task_queue.get()
-            if task is None:  # Stop signal
-                break
-            update_patient_record(task['patient_id'], task['updates'])
-            task_queue.task_done()
+def background_worker():
+    while True:
+        task = task_queue.get()
+        if task is None:
+            break
+        update_patient_record(task['patient_id'], task['updates'])
+        if 'event' in task:
+            task['event'].set()  # Signal that the task is done
+        task_queue.task_done()
 
 
 worker_thread = None
@@ -34,7 +36,8 @@ def start_worker(app):
 
 def stop_worker():
     global worker_thread
-    if worker_thread and worker_thread.is_alive():
-        task_queue.put(None)
-        worker_thread.join()
+    if worker_thread is not None:
+        task_queue.put(None)  # Signal the worker thread to terminate
+        if worker_thread.ident != threading.get_ident():
+            worker_thread.join()  # Only join if not the current thread
         worker_thread = None

@@ -18,27 +18,26 @@ def app():
         db.session.remove()
         db.drop_all()
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="module")
 def worker(app):
-    from app.background_tasks import start_worker, stop_worker
-    start_worker(app)  
+    """Starts and stops the background worker for the duration of the module's tests."""
+    start_worker(app)
     yield
     stop_worker()
 
 def test_process_update_task(app, worker):
     with app.app_context():
-        # Setup a patient to update
         patient = Patient(name="John Doe", age=30, gender="Male", doctor_id=1)
         db.session.add(patient)
         db.session.commit()
 
-        # Enqueue a task to update the patient
+        # Create an event object and pass it with the task
+        done_event = Event()
         updates = {'name': 'Jane Doe'}
-        task_queue.put({'patient_id': patient.id, 'updates': updates})
+        task_queue.put({'patient_id': patient.id, 'updates': updates, 'event': done_event})
         
-        # Allow some time for the task to process
-        import time; time.sleep(1)  # Not ideal for real tests, consider using mocks
+        # Wait for the event to be set by the background worker
+        done_event.wait(timeout=10)  # Timeout to avoid hanging indefinitely
         
-        # Verify the update
-        update_patient_record = Patient.query.get(patient.id)
-        assert update_patient_record.name == 'Jane Doe', "Patient name should be updated to 'Jane Doe'"
+        updated_patient_record = Patient.query.get(patient.id)
+        assert updated_patient_record.name == 'Jane Doe', "Patient name should be updated to 'Jane Doe'"
