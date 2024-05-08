@@ -1,200 +1,100 @@
-# Project2
-Healthcare Database
+# Healthcare Database Management System
 
 ## Introduction
-This application is a medical record management system designed to securely manage and provide access to patient and doctor data. It allows patients to view their medical records and notes from their doctors, while enabling doctors to access patient information relevant to their care.
+This Flask-based application is designed to manage healthcare data securely, providing functionalities for both doctors and patients to access and manage their respective information. It supports asynchronous background tasks for efficient data processing and includes extensive API endpoints for comprehensive interaction with the system.
 
 ## Table of Contents
 - [Installation](#installation)
 - [Usage](#usage)
 - [Features](#features)
-- [Dependencies](#dependencies)
-- [Documentation](#documentation)
 - [API Documentation](#api-documentation)
 - [Database Schema](#database-schema)
+- [Background Tasks](#background-tasks)
+- [Dependencies](#dependencies)
 - [Testing](#testing)
 - [Contributors](#contributors)
 - [License](#license)
 
 ## Installation
-Follow these steps to set up the application:
+To set up this project locally, follow these steps:
 1. Clone the repository:
-    `git clone https://github.com/ahmedk31/Project2.git`
-2. Install necessary dependencies:
-    `pip install -r requirements.txt`
-3. Start the application:
-    `python run.py`
+    ```bash
+    git clone https://github.com/ahmedk31/Project2.git
+    ```
+2. Install the required dependencies:
+    ```bash
+    pip install -r requirements.txt
+    ```
+3. Run the application:
+    ```bash
+    python run.py
+    ```
 
 ## Usage
-- **Doctors**: View and manage patient profiles, including medical records and notes.
-- **Patients**: Access their own medical information and notes from their doctors.
+This application provides separate interfaces for doctors and patients:
+- **Doctors**: Can add patient records, update medical histories, and access patient information.
+- **Patients**: Can view their medical histories and update their personal information.
 
 ## Features
-- Secure patient and doctor data management.
-- Access control tailored for different user roles.
-
-## Dependencies
-Dependencies are listed in the `requirements.txt` file, necessary for running the application.
-
-## Documentation
-Further documentation provides deeper insights into each module's functionalities.
+- Secure management of patient and doctor data.
+- Asynchronous task processing for operations that require extensive processing time.
+- Comprehensive RESTful API providing access to all functionalities of the system.
 
 ## API Documentation
-
+The system includes the following endpoints grouped by functionality:
 
 ### User Management
-
-#### Register User
-- **Endpoint:** `POST /register`
-- **Description:** Registers a new user as either a doctor or a patient.
-- **Payload:**
-  ```json
-  {
-    "username": "user1",
-    "email": "user@example.com",
-    "password": "securepassword",
-    "role": "doctor"
-  }
-- **Response:** Returns the newly created users's ID, name, and specialization.
-- **Status Codes:**
-  - `201 Created` if the user is successfully created.
-  - `400 Bad Request` if required fields are missing or invalid.
+- **Register User**: `POST /register`
+- **Login User**: `POST /login`
 
 ### Doctor Endpoints
-
-#### Add a Doctor
-- **Endpoint:** `POST /doctors`
-- **Description:** Adds a new doctor to the system.
-- **Payload:**
-  ```json
-  [{
-    "name": "Doctor Name",
-    "specialization": "Specialization"
-  }]
-
-
-- **Response:** Returns the newly created doctor's ID, name, and specialization.
-- **Status Codes:**
-  - `201 Created` if the doctor is successfully created.
-  - `400 Bad Request` if the name or specialization is missing.
-
-#### Get All Doctors
-- **Endpoint:** `GET /doctors`
-- **Description:** Retrieves a list of all doctors in the system.
-- **Response:**
-  ```json
-  [{
-    "id": 1,
-    "name": "Doctor Name",
-    "specialization": "Specialization"
-  }]
-
-
-- **Status Codes:**
-    -`200 OK` on successful retrival
+- **Add Doctor**: `POST /doctors`
+- **List Doctors**: `GET /doctors`
 
 ### Patient Endpoints
-#### Add a Patient
-- **Endpoint:** `POST /patients`
-- **Description:** Adds a new patient to the system.
+- **Add Patient**: `POST /patients`
+- **List Patients**: `GET /patients`
 
-- **Payload:**
-  ```json
-    [{  
-    "name": "Patient Name",
-    "age": 25,
-    "gender": "Gender",
-    "doctor_id": 1,
-    "room_number": "Room Number",
-    "bed_number": "Bed Number"
-    }]
-
-- **Response:** Returns the newly created patient's ID and name
-- **Status Codes:**
-    -`201 Created` if the patient is successfully created
-    -`400 Bad Request` if any required data is missing
-
-## Get All Patients
-
-- **Endpoint:** `GET /patients`
-- **Description:** Retrieves a list of all patients in the system.
-- **Response:**
-  ```json
-  [{
-    "id": pat.id,
-    "name": pat.name,
-    "age": pat.age,
-    "gender": pat.gender,
-    "doctor_id": pat.doctor_id
-  } for pat in patients]
-
-- **Status Codes:**
-    -`200 OK` on successful retrival.
-
-### Check History
-#### Add Check History
-- **Endpoint:** `POST /Check History`
-- **Description:** Records a new check-up event for a patient.
-- **Payload**:
-  ```json
-  [{
-     "patient_id": 123,
-    "check_time": "2023-09-01T14:00:00Z"
-  }]
-
-- **Response:** Returns the ID of the newly created check history record
-- **Status Codes:**
-    -`201 Created` if the check history is successfully created
+### Medical Records
+- **Add Record**: `POST /check_history`
+- **Update Patient Info**: `POST /update_patient/<int:patient_id>`
 
 ## Database Schema
-
 ### Models
-
 #### User
-- **id**: Primary key
-- **role**: String (choices: Doctor or Patient)
-- **username**: String (Unique, Not Null)
-- **email**: String (Unique, Not Null)
-- **password_hash**: String
+- `id`: Integer, Primary Key
+- `username`: String, Unique, Not Null
+- `email`: String, Unique, Not Null
+- `password_hash`: String
 
 #### Doctor
-- **id**: Primary key
-- **name**: String (Not Null)
-- **specialization**: String (Not Null)
-- **patients**: Relationship (defines the association with patients)
+- `id`: Integer, Primary Key
+- `name`: String, Not Null
+- `specialization`: String
 
 #### Patient
-- **id**: Primary key
-- **name**: String (Not Null)
-- **age**: Integer
-- **gender**: String
-- **doctor_id**: ForeignKey (references Doctor)
-- **room_number**: String
-- **bed_number**: String
-- **diagnosis**: String
-- **prescribed_medicine**: String
+- `id`: Integer, Primary Key
+- `name`: String, Not Null
+- `age`: Integer
+- `gender`: String
+- `doctor_id`: ForeignKey, References Doctor.id
 
 #### CheckHistory
-- **id**: Primary key
-- **patient_id**: ForeignKey (references Patient)
-- **check_time**: DateTime (default is current UTC time)
+- `id`: Integer, Primary Key
+- `patient_id`: ForeignKey, References Patient.id
+- `check_time`: DateTime, Default is current UTC time
 
-### Testing
+## Background Tasks
+This system uses background tasks for sending email notifications and processing data updates. These tasks are managed through a queue system where tasks are added and processed asynchronously.
 
-Testing ensures application reliability and verifies that all components of the database interact correctly and maintain integrity under various conditions.
+## Dependencies
+The application requires several Python libraries, detailed in the `requirements.txt` file, including Flask, SQLAlchemy, pytest, and bcrypt.
 
-
-- **Models:**
-```bash
-    pytest test_models.py
-```
-- **Routes:**
-```bash
-    pytest test_routes.py
-```
+## Testing
+Tests are written for models, routes, and background tasks:
+- **Models**: `pytest test_models.py`
+- **Routes**: `pytest test_routes.py`
+- **Background Tasks**: `pytest test_background_tasks.py`
 
 ## Contributors
-
-Kawar Ahmed
-
-
+- Kawsar Ahmed
