@@ -13,7 +13,7 @@ This Flask-based application is designed to manage healthcare data securely, pro
 - [Dependencies](#dependencies)
 - [Testing](#testing)
 - [Contributors](#contributors)
-- [License](#license)
+
 
 ## Installation
 To set up this project locally, follow these steps:
