@@ -132,7 +132,6 @@ The application defines the following RESTful endpoints to manage user interacti
             }
             for pat in patients
         ]
-    ```
 
 
 - **Status Codes:**
