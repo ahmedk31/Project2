@@ -127,7 +127,9 @@ The application defines the following RESTful endpoints to manage user interacti
     "age": pat.age,
     "gender": pat.gender,
     "doctor_id": pat.doctor_id
-  } for pat in patients]
+  }
+      for pat in patients
+    ]
 
 - **Status Codes:**
     -`200 OK` on successful retrival.
