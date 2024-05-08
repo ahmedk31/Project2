@@ -120,8 +120,8 @@ The application defines the following RESTful endpoints to manage user interacti
 - **Endpoint:** `GET /patients`
 - **Description:** Retrieves a list of all patients in the system.
 - **Response:**
-  ```json
-  [
+```python
+[
     {
         "id": pat.id,
         "name": pat.name,
@@ -131,6 +131,7 @@ The application defines the following RESTful endpoints to manage user interacti
     }
     for pat in patients
 ]
+
 
 - **Status Codes:**
     -`200 OK` on successful retrival.
