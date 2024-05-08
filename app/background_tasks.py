@@ -10,9 +10,10 @@ task_queue = queue.Queue()
 
 logging.basicConfig(level=logging.DEBUG)
 
-def update_patient_record(patient_id, updates):
+#This function will probably be moved later, should 
+def update_patient_record(patient_id, updates): 
     with current_app.app_context():
-        patient = Patient.query.get(patient_id)
+        patient = db.session.get(Patient, patient_id)
         if patient:
             for key, value in updates.items():
                 setattr(patient, key, value)

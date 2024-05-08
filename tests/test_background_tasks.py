@@ -43,7 +43,7 @@ def test_process_update_task(app, worker):
 
         # Fetch the patient again to verify updates.
         db.session.expire_all()  # Invalidate the session cache to ensure fresh data is fetched.
-        updated_patient_record = Patient.query.get(patient.id)
+        updated_patient_record = db.session.get(Patient, patient.id)
 
         # Assert the patient's name has been updated as expected.
         assert updated_patient_record.name == 'Jane Doe', "Patient name should be updated to 'Jane Doe'"
